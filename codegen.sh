@@ -2,7 +2,7 @@
 
 echo "Generating proto..."
 PROTO_OUR_DIR="./internal/proto"
-PROTO_DIR="../../proto"
+PROTO_DIR="../docu-stream/proto"
 
 rm -rf ${PROTO_OUR_DIR}
 mkdir -p ${PROTO_OUR_DIR}
