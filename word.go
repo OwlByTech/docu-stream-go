@@ -3,7 +3,7 @@ package docustream
 import (
 	"context"
 
-	"github.com/owlbytech/docu-stream-go/internal/proto"
+	"github.com/owlbytech/docu-stream-go/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
