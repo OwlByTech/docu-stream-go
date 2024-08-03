@@ -26,7 +26,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type WordClient interface {
-	Apply(ctx context.Context, in *WordApplyReq, opts ...grpc.CallOption) (*WordApplyRes, error)
+	Apply(ctx context.Context, opts ...grpc.CallOption) (Word_ApplyClient, error)
 }
 
 type wordClient struct {
@@ -37,20 +37,42 @@ func NewWordClient(cc grpc.ClientConnInterface) WordClient {
 	return &wordClient{cc}
 }
 
-func (c *wordClient) Apply(ctx context.Context, in *WordApplyReq, opts ...grpc.CallOption) (*WordApplyRes, error) {
-	out := new(WordApplyRes)
-	err := c.cc.Invoke(ctx, Word_Apply_FullMethodName, in, out, opts...)
+func (c *wordClient) Apply(ctx context.Context, opts ...grpc.CallOption) (Word_ApplyClient, error) {
+	stream, err := c.cc.NewStream(ctx, &Word_ServiceDesc.Streams[0], Word_Apply_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &wordApplyClient{stream}
+	return x, nil
+}
+
+type Word_ApplyClient interface {
+	Send(*WordApplyReq) error
+	Recv() (*WordApplyRes, error)
+	grpc.ClientStream
+}
+
+type wordApplyClient struct {
+	grpc.ClientStream
+}
+
+func (x *wordApplyClient) Send(m *WordApplyReq) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *wordApplyClient) Recv() (*WordApplyRes, error) {
+	m := new(WordApplyRes)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
 }
 
 // WordServer is the server API for Word service.
 // All implementations must embed UnimplementedWordServer
 // for forward compatibility
 type WordServer interface {
-	Apply(context.Context, *WordApplyReq) (*WordApplyRes, error)
+	Apply(Word_ApplyServer) error
 	mustEmbedUnimplementedWordServer()
 }
 
@@ -58,8 +80,8 @@ type WordServer interface {
 type UnimplementedWordServer struct {
 }
 
-func (UnimplementedWordServer) Apply(context.Context, *WordApplyReq) (*WordApplyRes, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Apply not implemented")
+func (UnimplementedWordServer) Apply(Word_ApplyServer) error {
+	return status.Errorf(codes.Unimplemented, "method Apply not implemented")
 }
 func (UnimplementedWordServer) mustEmbedUnimplementedWordServer() {}
 
@@ -74,22 +96,30 @@ func RegisterWordServer(s grpc.ServiceRegistrar, srv WordServer) {
 	s.RegisterService(&Word_ServiceDesc, srv)
 }
 
-func _Word_Apply_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(WordApplyReq)
-	if err := dec(in); err != nil {
+func _Word_Apply_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(WordServer).Apply(&wordApplyServer{stream})
+}
+
+type Word_ApplyServer interface {
+	Send(*WordApplyRes) error
+	Recv() (*WordApplyReq, error)
+	grpc.ServerStream
+}
+
+type wordApplyServer struct {
+	grpc.ServerStream
+}
+
+func (x *wordApplyServer) Send(m *WordApplyRes) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *wordApplyServer) Recv() (*WordApplyReq, error) {
+	m := new(WordApplyReq)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
-	if interceptor == nil {
-		return srv.(WordServer).Apply(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Word_Apply_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(WordServer).Apply(ctx, req.(*WordApplyReq))
-	}
-	return interceptor(ctx, in, info, handler)
+	return m, nil
 }
 
 // Word_ServiceDesc is the grpc.ServiceDesc for Word service.
@@ -98,12 +128,14 @@ func _Word_Apply_Handler(srv interface{}, ctx context.Context, dec func(interfac
 var Word_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "word.Word",
 	HandlerType: (*WordServer)(nil),
-	Methods: []grpc.MethodDesc{
+	Methods:     []grpc.MethodDesc{},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "Apply",
-			Handler:    _Word_Apply_Handler,
+			StreamName:    "Apply",
+			Handler:       _Word_Apply_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
 	Metadata: "word.proto",
 }

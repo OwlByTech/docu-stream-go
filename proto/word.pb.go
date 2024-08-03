@@ -20,17 +20,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type DocuStringValues struct {
+type DocuChunk struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Key   string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
-	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	Chunk []byte `protobuf:"bytes,1,opt,name=chunk,proto3" json:"chunk,omitempty"`
 }
 
-func (x *DocuStringValues) Reset() {
-	*x = DocuStringValues{}
+func (x *DocuChunk) Reset() {
+	*x = DocuChunk{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_word_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -38,13 +37,13 @@ func (x *DocuStringValues) Reset() {
 	}
 }
 
-func (x *DocuStringValues) String() string {
+func (x *DocuChunk) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DocuStringValues) ProtoMessage() {}
+func (*DocuChunk) ProtoMessage() {}
 
-func (x *DocuStringValues) ProtoReflect() protoreflect.Message {
+func (x *DocuChunk) ProtoReflect() protoreflect.Message {
 	mi := &file_word_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -56,23 +55,126 @@ func (x *DocuStringValues) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DocuStringValues.ProtoReflect.Descriptor instead.
-func (*DocuStringValues) Descriptor() ([]byte, []int) {
+// Deprecated: Use DocuChunk.ProtoReflect.Descriptor instead.
+func (*DocuChunk) Descriptor() ([]byte, []int) {
 	return file_word_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *DocuStringValues) GetKey() string {
+func (x *DocuChunk) GetChunk() []byte {
+	if x != nil {
+		return x.Chunk
+	}
+	return nil
+}
+
+type DocuValues struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Key   string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	Value string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+}
+
+func (x *DocuValues) Reset() {
+	*x = DocuValues{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_word_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DocuValues) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DocuValues) ProtoMessage() {}
+
+func (x *DocuValues) ProtoReflect() protoreflect.Message {
+	mi := &file_word_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DocuValues.ProtoReflect.Descriptor instead.
+func (*DocuValues) Descriptor() ([]byte, []int) {
+	return file_word_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DocuValues) GetKey() string {
 	if x != nil {
 		return x.Key
 	}
 	return ""
 }
 
-func (x *DocuStringValues) GetValue() string {
+func (x *DocuValues) GetValue() string {
 	if x != nil {
 		return x.Value
 	}
 	return ""
+}
+
+type DocuWord struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Body   []*DocuValues `protobuf:"bytes,1,rep,name=body,proto3" json:"body,omitempty"`
+	Header []*DocuValues `protobuf:"bytes,2,rep,name=header,proto3" json:"header,omitempty"`
+}
+
+func (x *DocuWord) Reset() {
+	*x = DocuWord{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_word_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DocuWord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DocuWord) ProtoMessage() {}
+
+func (x *DocuWord) ProtoReflect() protoreflect.Message {
+	mi := &file_word_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DocuWord.ProtoReflect.Descriptor instead.
+func (*DocuWord) Descriptor() ([]byte, []int) {
+	return file_word_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *DocuWord) GetBody() []*DocuValues {
+	if x != nil {
+		return x.Body
+	}
+	return nil
+}
+
+func (x *DocuWord) GetHeader() []*DocuValues {
+	if x != nil {
+		return x.Header
+	}
+	return nil
 }
 
 type WordApplyReq struct {
@@ -80,14 +182,17 @@ type WordApplyReq struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Body   []*DocuStringValues `protobuf:"bytes,2,rep,name=body,proto3" json:"body,omitempty"`
-	Header []*DocuStringValues `protobuf:"bytes,3,rep,name=header,proto3" json:"header,omitempty"`
+	// Types that are assignable to Request:
+	//
+	//	*WordApplyReq_Word
+	//	*WordApplyReq_Docu
+	Request isWordApplyReq_Request `protobuf_oneof:"request"`
 }
 
 func (x *WordApplyReq) Reset() {
 	*x = WordApplyReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_word_proto_msgTypes[1]
+		mi := &file_word_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -100,7 +205,7 @@ func (x *WordApplyReq) String() string {
 func (*WordApplyReq) ProtoMessage() {}
 
 func (x *WordApplyReq) ProtoReflect() protoreflect.Message {
-	mi := &file_word_proto_msgTypes[1]
+	mi := &file_word_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -113,33 +218,58 @@ func (x *WordApplyReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WordApplyReq.ProtoReflect.Descriptor instead.
 func (*WordApplyReq) Descriptor() ([]byte, []int) {
-	return file_word_proto_rawDescGZIP(), []int{1}
+	return file_word_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *WordApplyReq) GetBody() []*DocuStringValues {
-	if x != nil {
-		return x.Body
+func (m *WordApplyReq) GetRequest() isWordApplyReq_Request {
+	if m != nil {
+		return m.Request
 	}
 	return nil
 }
 
-func (x *WordApplyReq) GetHeader() []*DocuStringValues {
-	if x != nil {
-		return x.Header
+func (x *WordApplyReq) GetWord() *DocuWord {
+	if x, ok := x.GetRequest().(*WordApplyReq_Word); ok {
+		return x.Word
 	}
 	return nil
 }
+
+func (x *WordApplyReq) GetDocu() *DocuChunk {
+	if x, ok := x.GetRequest().(*WordApplyReq_Docu); ok {
+		return x.Docu
+	}
+	return nil
+}
+
+type isWordApplyReq_Request interface {
+	isWordApplyReq_Request()
+}
+
+type WordApplyReq_Word struct {
+	Word *DocuWord `protobuf:"bytes,1,opt,name=word,proto3,oneof"`
+}
+
+type WordApplyReq_Docu struct {
+	Docu *DocuChunk `protobuf:"bytes,2,opt,name=docu,proto3,oneof"`
+}
+
+func (*WordApplyReq_Word) isWordApplyReq_Request() {}
+
+func (*WordApplyReq_Docu) isWordApplyReq_Request() {}
 
 type WordApplyRes struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	Docu *DocuChunk `protobuf:"bytes,1,opt,name=docu,proto3" json:"docu,omitempty"`
 }
 
 func (x *WordApplyRes) Reset() {
 	*x = WordApplyRes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_word_proto_msgTypes[2]
+		mi := &file_word_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -152,7 +282,7 @@ func (x *WordApplyRes) String() string {
 func (*WordApplyRes) ProtoMessage() {}
 
 func (x *WordApplyRes) ProtoReflect() protoreflect.Message {
-	mi := &file_word_proto_msgTypes[2]
+	mi := &file_word_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -165,30 +295,47 @@ func (x *WordApplyRes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WordApplyRes.ProtoReflect.Descriptor instead.
 func (*WordApplyRes) Descriptor() ([]byte, []int) {
-	return file_word_proto_rawDescGZIP(), []int{2}
+	return file_word_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *WordApplyRes) GetDocu() *DocuChunk {
+	if x != nil {
+		return x.Docu
+	}
+	return nil
 }
 
 var File_word_proto protoreflect.FileDescriptor
 
 var file_word_proto_rawDesc = []byte{
 	0x0a, 0x0a, 0x77, 0x6f, 0x72, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x77, 0x6f,
-	0x72, 0x64, 0x22, 0x3a, 0x0a, 0x10, 0x44, 0x6f, 0x63, 0x75, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67,
-	0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
-	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x6a,
-	0x0a, 0x0c, 0x57, 0x6f, 0x72, 0x64, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x12, 0x2a,
-	0x0a, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x77,
-	0x6f, 0x72, 0x64, 0x2e, 0x44, 0x6f, 0x63, 0x75, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x61,
-	0x6c, 0x75, 0x65, 0x73, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x12, 0x2e, 0x0a, 0x06, 0x68, 0x65,
-	0x61, 0x64, 0x65, 0x72, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x77, 0x6f, 0x72,
-	0x64, 0x2e, 0x44, 0x6f, 0x63, 0x75, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x56, 0x61, 0x6c, 0x75,
-	0x65, 0x73, 0x52, 0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x22, 0x0e, 0x0a, 0x0c, 0x57, 0x6f,
-	0x72, 0x64, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x73, 0x32, 0x37, 0x0a, 0x04, 0x57, 0x6f,
-	0x72, 0x64, 0x12, 0x2f, 0x0a, 0x05, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x12, 0x12, 0x2e, 0x77, 0x6f,
-	0x72, 0x64, 0x2e, 0x57, 0x6f, 0x72, 0x64, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x1a,
-	0x12, 0x2e, 0x77, 0x6f, 0x72, 0x64, 0x2e, 0x57, 0x6f, 0x72, 0x64, 0x41, 0x70, 0x70, 0x6c, 0x79,
-	0x52, 0x65, 0x73, 0x42, 0x11, 0x5a, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0xaa, 0x02, 0x06,
-	0x6f, 0x66, 0x66, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x64, 0x22, 0x21, 0x0a, 0x09, 0x44, 0x6f, 0x63, 0x75, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x12,
+	0x14, 0x0a, 0x05, 0x63, 0x68, 0x75, 0x6e, 0x6b, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x05,
+	0x63, 0x68, 0x75, 0x6e, 0x6b, 0x22, 0x34, 0x0a, 0x0a, 0x44, 0x6f, 0x63, 0x75, 0x56, 0x61, 0x6c,
+	0x75, 0x65, 0x73, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x5a, 0x0a, 0x08, 0x44,
+	0x6f, 0x63, 0x75, 0x57, 0x6f, 0x72, 0x64, 0x12, 0x24, 0x0a, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x77, 0x6f, 0x72, 0x64, 0x2e, 0x44, 0x6f, 0x63,
+	0x75, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x52, 0x04, 0x62, 0x6f, 0x64, 0x79, 0x12, 0x28, 0x0a,
+	0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e,
+	0x77, 0x6f, 0x72, 0x64, 0x2e, 0x44, 0x6f, 0x63, 0x75, 0x56, 0x61, 0x6c, 0x75, 0x65, 0x73, 0x52,
+	0x06, 0x68, 0x65, 0x61, 0x64, 0x65, 0x72, 0x22, 0x66, 0x0a, 0x0c, 0x57, 0x6f, 0x72, 0x64, 0x41,
+	0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x12, 0x24, 0x0a, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x77, 0x6f, 0x72, 0x64, 0x2e, 0x44, 0x6f, 0x63,
+	0x75, 0x57, 0x6f, 0x72, 0x64, 0x48, 0x00, 0x52, 0x04, 0x77, 0x6f, 0x72, 0x64, 0x12, 0x25, 0x0a,
+	0x04, 0x64, 0x6f, 0x63, 0x75, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x77, 0x6f,
+	0x72, 0x64, 0x2e, 0x44, 0x6f, 0x63, 0x75, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x48, 0x00, 0x52, 0x04,
+	0x64, 0x6f, 0x63, 0x75, 0x42, 0x09, 0x0a, 0x07, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22,
+	0x33, 0x0a, 0x0c, 0x57, 0x6f, 0x72, 0x64, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x73, 0x12,
+	0x23, 0x0a, 0x04, 0x64, 0x6f, 0x63, 0x75, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e,
+	0x77, 0x6f, 0x72, 0x64, 0x2e, 0x44, 0x6f, 0x63, 0x75, 0x43, 0x68, 0x75, 0x6e, 0x6b, 0x52, 0x04,
+	0x64, 0x6f, 0x63, 0x75, 0x32, 0x3b, 0x0a, 0x04, 0x57, 0x6f, 0x72, 0x64, 0x12, 0x33, 0x0a, 0x05,
+	0x41, 0x70, 0x70, 0x6c, 0x79, 0x12, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x64, 0x2e, 0x57, 0x6f, 0x72,
+	0x64, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x71, 0x1a, 0x12, 0x2e, 0x77, 0x6f, 0x72, 0x64,
+	0x2e, 0x57, 0x6f, 0x72, 0x64, 0x41, 0x70, 0x70, 0x6c, 0x79, 0x52, 0x65, 0x73, 0x28, 0x01, 0x30,
+	0x01, 0x42, 0x11, 0x5a, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0xaa, 0x02, 0x06, 0x6f, 0x66,
+	0x66, 0x69, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -203,22 +350,27 @@ func file_word_proto_rawDescGZIP() []byte {
 	return file_word_proto_rawDescData
 }
 
-var file_word_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_word_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_word_proto_goTypes = []interface{}{
-	(*DocuStringValues)(nil), // 0: word.DocuStringValues
-	(*WordApplyReq)(nil),     // 1: word.WordApplyReq
-	(*WordApplyRes)(nil),     // 2: word.WordApplyRes
+	(*DocuChunk)(nil),    // 0: word.DocuChunk
+	(*DocuValues)(nil),   // 1: word.DocuValues
+	(*DocuWord)(nil),     // 2: word.DocuWord
+	(*WordApplyReq)(nil), // 3: word.WordApplyReq
+	(*WordApplyRes)(nil), // 4: word.WordApplyRes
 }
 var file_word_proto_depIdxs = []int32{
-	0, // 0: word.WordApplyReq.body:type_name -> word.DocuStringValues
-	0, // 1: word.WordApplyReq.header:type_name -> word.DocuStringValues
-	1, // 2: word.Word.Apply:input_type -> word.WordApplyReq
-	2, // 3: word.Word.Apply:output_type -> word.WordApplyRes
-	3, // [3:4] is the sub-list for method output_type
-	2, // [2:3] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	1, // 0: word.DocuWord.body:type_name -> word.DocuValues
+	1, // 1: word.DocuWord.header:type_name -> word.DocuValues
+	2, // 2: word.WordApplyReq.word:type_name -> word.DocuWord
+	0, // 3: word.WordApplyReq.docu:type_name -> word.DocuChunk
+	0, // 4: word.WordApplyRes.docu:type_name -> word.DocuChunk
+	3, // 5: word.Word.Apply:input_type -> word.WordApplyReq
+	4, // 6: word.Word.Apply:output_type -> word.WordApplyRes
+	6, // [6:7] is the sub-list for method output_type
+	5, // [5:6] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_word_proto_init() }
@@ -228,7 +380,7 @@ func file_word_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_word_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DocuStringValues); i {
+			switch v := v.(*DocuChunk); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -240,7 +392,7 @@ func file_word_proto_init() {
 			}
 		}
 		file_word_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*WordApplyReq); i {
+			switch v := v.(*DocuValues); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -252,6 +404,30 @@ func file_word_proto_init() {
 			}
 		}
 		file_word_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DocuWord); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_word_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*WordApplyReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_word_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*WordApplyRes); i {
 			case 0:
 				return &v.state
@@ -264,13 +440,17 @@ func file_word_proto_init() {
 			}
 		}
 	}
+	file_word_proto_msgTypes[3].OneofWrappers = []interface{}{
+		(*WordApplyReq_Word)(nil),
+		(*WordApplyReq_Docu)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_word_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
