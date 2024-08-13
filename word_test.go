@@ -34,9 +34,20 @@ func TestWordApplyService(t *testing.T) {
 				Key:   "Company Logo",
 				Value: &logo,
 			},
-
 		},
 		Body: []DocuValue{
+			{
+				Type:  DocuValueTypeText,
+				Key:   "Company Name",
+				Value: "OwlByTech",
+			},
+			{
+				Type:  DocuValueTypeImage,
+				Key:   "Company Logo",
+				Value: &logo,
+			},
+		},
+		Footer: []DocuValue{
 			{
 				Type:  DocuValueTypeText,
 				Key:   "Company Name",

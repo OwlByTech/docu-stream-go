@@ -34,6 +34,7 @@ type WordApplyReq struct {
 	Docu   []byte
 	Body   []DocuValue
 	Header []DocuValue
+	Footer []DocuValue
 }
 
 type WordApplyRes struct {
@@ -94,11 +95,17 @@ func (w *Word) Apply(req *WordApplyReq) (*WordApplyRes, error) {
 		return nil, err
 	}
 
+	footerValues, err := processData(&attachFiles, req.Header)
+	if err != nil {
+		return nil, err
+	}
+
 	initRequest := &pb.WordApplyReq{
 		Request: &pb.WordApplyReq_Word{
 			Word: &pb.DocuWord{
 				Body:   bodyValues,
 				Header: headerValues,
+				Footer: footerValues,
 			},
 		},
 	}
