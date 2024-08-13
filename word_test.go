@@ -17,13 +17,36 @@ func TestWordApplyService(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotEmpty(t, data)
 
+	logo, err := os.ReadFile("../docu-stream/office/test/logo.png")
+	assert.Nil(t, err)
+	assert.NotEmpty(t, data)
+
 	res, err := c.Apply(&WordApplyReq{
 		Docu: data,
-		Header: map[string]string{
-			"Company Name": "OwlByTech",
+		Header: []DocuValue{
+			{
+				Type:  DocuValueTypeText,
+				Key:   "Company Name",
+				Value: "OwlByTech",
+			},
+			{
+				Type:  DocuValueTypeImage,
+				Key:   "Company Logo",
+				Value: &logo,
+			},
+
 		},
-		Body: map[string]string{
-			"Company Name": "OwlByTech",
+		Body: []DocuValue{
+			{
+				Type:  DocuValueTypeText,
+				Key:   "Company Name",
+				Value: "OwlByTech",
+			},
+			{
+				Type:  DocuValueTypeImage,
+				Key:   "Company Logo",
+				Value: &logo,
+			},
 		},
 	})
 

@@ -3,7 +3,10 @@ package docustream
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
+	"reflect"
+	"strconv"
 
 	pb "github.com/owlbytech/docu-stream-go/proto"
 	"google.golang.org/grpc"
@@ -14,10 +17,23 @@ type ConnectOptions struct {
 	Url string
 }
 
+type DocuValueType pb.DocuValueType
+
+const DocuValueTypeText DocuValueType = 0
+const DocuValueTypeImage DocuValueType = 1
+
+type DocuValueRaw = interface{}
+
+type DocuValue struct {
+	Type  DocuValueType
+	Key   string
+	Value DocuValueRaw
+}
+
 type WordApplyReq struct {
 	Docu   []byte
-	Body   map[string]string
-	Header map[string]string
+	Body   []DocuValue
+	Header []DocuValue
 }
 
 type WordApplyRes struct {
@@ -40,18 +56,40 @@ func NewWordClient(c *ConnectOptions) (*Word, error) {
 	}, nil
 }
 
-func mapToDocuValues(m map[string]string) []*pb.DocuValues {
-	var values []*pb.DocuValues
-	for k, v := range m {
-		values = append(values, &pb.DocuValues{Key: k, Value: v})
+func processData(attachFiles *[]*[]byte, m []DocuValue) ([]*pb.DocuValue, error) {
+	var values []*pb.DocuValue
+
+	for _, v := range m {
+		kind := reflect.ValueOf(v.Value).Kind()
+
+		switch kind {
+		case reflect.String:
+			values = append(values, &pb.DocuValue{Key: v.Key, Value: v.Value.(string), Type: pb.DocuValueType_TEXT})
+		case reflect.Ptr:
+			attachFile, ok := v.Value.(*[]byte)
+			if !ok {
+				return nil, fmt.Errorf("Slice must be of an pointer of slice of byte types")
+			}
+
+			*attachFiles = append(*attachFiles, attachFile)
+			values = append(values, &pb.DocuValue{Key: v.Key, Value: strconv.Itoa(len(*attachFiles)-1), Type: pb.DocuValueType_IMAGE})
+		default:
+			return nil, fmt.Errorf("Docu stream only support string and pointer slice of bytes")
+		}
 	}
 
-	return values
+	return values, nil
 }
 
 func (w *Word) Apply(req *WordApplyReq) (*WordApplyRes, error) {
-	stream, err := w.client.Apply(context.Background())
+	var attachFiles []*[]byte = []*[]byte{&req.Docu}
 
+	bodyValues, err := processData(&attachFiles, req.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	headerValues, err := processData(&attachFiles, req.Header)
 	if err != nil {
 		return nil, err
 	}
@@ -59,35 +97,50 @@ func (w *Word) Apply(req *WordApplyReq) (*WordApplyRes, error) {
 	initRequest := &pb.WordApplyReq{
 		Request: &pb.WordApplyReq_Word{
 			Word: &pb.DocuWord{
-				Body:   mapToDocuValues(req.Body),
-				Header: mapToDocuValues(req.Header),
+				Body:   bodyValues,
+				Header: headerValues,
 			},
 		},
+	}
+
+	stream, err := w.client.Apply(context.Background())
+	if err != nil {
+		return nil, err
 	}
 
 	if err := stream.Send(initRequest); err != nil {
 		return nil, err
 	}
 
-	buffer := bytes.NewReader(req.Docu)
-	chunkSize := 1024
-	buf := make([]byte, chunkSize)
+	var attachFilesReaders []*bytes.Reader
+
+	for _, file := range attachFiles {
+		attachFilesReaders = append(attachFilesReaders, bytes.NewReader(*file))
+	}
 
 	for {
-		n, err := buffer.Read(buf)
-		if err != nil && err != io.EOF {
-			return nil, err
-		}
+		allFileDone := true
 
-		if n == 0 {
-			stream.CloseSend()
-			break
+		chunks := make([][]byte, len(attachFiles))
+		for k, fileReader := range attachFilesReaders {
+			chunkSize := 1024
+			buf := make([]byte, chunkSize)
+
+			n, err := fileReader.Read(buf)
+			if err != nil && err != io.EOF {
+				return nil, err
+			}
+
+			if n > 0 {
+				allFileDone = false
+				chunks[k] = buf[:n]
+			}
 		}
 
 		chunkReq := &pb.WordApplyReq{
 			Request: &pb.WordApplyReq_Docu{
 				Docu: &pb.DocuChunk{
-					Chunk: buf[:n],
+					Chunks: chunks,
 				},
 			},
 		}
@@ -95,7 +148,13 @@ func (w *Word) Apply(req *WordApplyReq) (*WordApplyRes, error) {
 		if err := stream.Send(chunkReq); err != nil {
 			return nil, err
 		}
+
+		if allFileDone {
+			break
+		}
 	}
+
+	stream.CloseSend()
 
 	var docuRes bytes.Buffer
 	for {
@@ -107,12 +166,12 @@ func (w *Word) Apply(req *WordApplyReq) (*WordApplyRes, error) {
 			return nil, err
 		}
 
-		chunk := res.Docu.Chunk
+		chunk := res.Docu.Chunks
 		if len(chunk) <= 0 {
 			continue
 		}
 
-		if _, err := docuRes.Write(chunk); err != nil {
+		if _, err := docuRes.Write(chunk[0]); err != nil {
 			return nil, err
 		}
 	}
