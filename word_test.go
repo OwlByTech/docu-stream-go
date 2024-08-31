@@ -12,12 +12,12 @@ func TestWordApplyService(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
-	data, err := os.ReadFile("../docu-stream/office/test/Template.docx")
+	data, err := os.ReadFile("../docu-stream/test/Template.docx")
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, data)
 
-	logo, err := os.ReadFile("../docu-stream/office/test/logo.png")
+	logo, err := os.ReadFile("../docu-stream/test/logo.png")
 	assert.Nil(t, err)
 	assert.NotEmpty(t, data)
 
