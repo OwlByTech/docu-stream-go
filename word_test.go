@@ -64,6 +64,6 @@ func TestWordApplyService(t *testing.T) {
 	assert.Nil(t, err)
 	assert.NotNil(t, res)
 
-	err = os.WriteFile("./word_test.docx", res.Docu, 0644)
+	err = os.WriteFile("./outputs/word_test.docx", res.Docu, 0644)
 	assert.Nil(t, err)
 }

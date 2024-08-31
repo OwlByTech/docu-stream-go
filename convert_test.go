@@ -20,6 +20,6 @@ func TestWordToPdf(t *testing.T){
 	assert.Nil(t, err)
 	assert.NotNil(t, pdf)
 
-	err = os.WriteFile("./word_test.pdf", *pdf, 0644)
+	err = os.WriteFile("./outputs/word_test.pdf", *pdf, 0644)
 	assert.Nil(t, err)
 }
