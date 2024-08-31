@@ -3,58 +3,58 @@ package docustream
 import (
 	"os"
 	"testing"
-
+	ds "github.com/owlbytech/docu-stream-go"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWordApplyService(t *testing.T) {
-	c, err := NewWordClient(&ConnectOptions{Url: "localhost:3000"})
+func applyTestWordApplyService(t *testing.T) {
+	c, err := ds.NewWordClient(&ds.ConnectOptions{Url: "localhost:3000"})
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
-	data, err := os.ReadFile("../docu-stream/test/Template.docx")
+	data, err := os.ReadFile("../../docu-stream/test/Template.docx")
 
 	assert.Nil(t, err)
 	assert.NotEmpty(t, data)
 
-	logo, err := os.ReadFile("../docu-stream/test/logo.png")
+	logo, err := os.ReadFile("../../docu-stream/test/logo.png")
 	assert.Nil(t, err)
 	assert.NotEmpty(t, data)
 
-	res, err := c.Apply(&WordApplyReq{
+	res, err := c.Apply(&ds.WordApplyReq{
 		Docu: data,
-		Header: []DocuValue{
+		Header: []ds.DocuValue{
 			{
-				Type:  DocuValueTypeText,
+				Type:  ds.DocuValueTypeText,
 				Key:   "Company Name",
 				Value: "OwlByTech",
 			},
 			{
-				Type:  DocuValueTypeImage,
+				Type:  ds.DocuValueTypeImage,
 				Key:   "Company Logo",
 				Value: &logo,
 			},
 		},
-		Body: []DocuValue{
+		Body: []ds.DocuValue{
 			{
-				Type:  DocuValueTypeText,
+				Type:  ds.DocuValueTypeText,
 				Key:   "Company Name",
 				Value: "OwlByTech",
 			},
 			{
-				Type:  DocuValueTypeImage,
+				Type:  ds.DocuValueTypeImage,
 				Key:   "Company Logo",
 				Value: &logo,
 			},
 		},
-		Footer: []DocuValue{
+		Footer: []ds.DocuValue{
 			{
-				Type:  DocuValueTypeText,
+				Type:  ds.DocuValueTypeText,
 				Key:   "Company Name",
 				Value: "OwlByTech",
 			},
 			{
-				Type:  DocuValueTypeImage,
+				Type:  ds.DocuValueTypeImage,
 				Key:   "Company Logo",
 				Value: &logo,
 			},

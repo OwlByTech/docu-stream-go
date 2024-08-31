@@ -4,15 +4,16 @@ import (
 	"os"
 	"testing"
 
+	ds "github.com/owlbytech/docu-stream-go"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWordToPdf(t *testing.T){
-	c, err := NewConvertClient(&ConnectOptions{Url: "localhost:4014"})
+func applyTestWordToPdf(t *testing.T) {
+	c, err := ds.NewConvertClient(&ds.ConnectOptions{Url: "localhost:4014"})
 	assert.Nil(t, err)
 	assert.NotNil(t, c)
 
-	word, err := os.ReadFile("../docu-stream/test/Template.docx")
+	word, err := os.ReadFile("./outputs/word_test.docx")
 	assert.Nil(t, err)
 	assert.NotEmpty(t, word)
 
